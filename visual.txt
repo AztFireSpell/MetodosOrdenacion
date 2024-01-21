@@ -1,0 +1,63 @@
+Private Sub Workbook_BeforeClose(Cancel As Boolean)
+ActiveSheet.ChartObjects("Gráfico 1").Activate
+ActiveChart.Parent.Delete
+Range("A1:B5").Select
+Selection.QueryTable.Delete
+Selection.ClearContents
+ThisWorkbook.Saved = True
+
+End Sub
+
+Private Sub Workbook_BeforeSave(ByVal SaveAsUI As Boolean, Cancel As Boolean)
+ThisWorkbook.Saved = True
+End Sub
+
+Private Sub Workbook_Open()
+ Application.CutCopyMode = False
+    With ActiveSheet.QueryTables.Add(Connection:= _
+        "TEXT;" & ThisWorkbook.Path & "\Tiempofinal.txt", Destination:= _
+        Range("$A$1"))
+        .Name = "Tiempofinal"
+        .FieldNames = True
+        .RowNumbers = False
+        .FillAdjacentFormulas = False
+        .PreserveFormatting = True
+        .RefreshOnFileOpen = False
+        .RefreshStyle = xlInsertDeleteCells
+        .SavePassword = False
+        .SaveData = True
+        .AdjustColumnWidth = True
+        .RefreshPeriod = 0
+        .TextFilePromptOnRefresh = False
+        .TextFilePlatform = 850
+        .TextFileStartRow = 1
+        .TextFileParseType = xlDelimited
+        .TextFileTextQualifier = xlTextQualifierDoubleQuote
+        .TextFileConsecutiveDelimiter = False
+        .TextFileTabDelimiter = True
+        .TextFileSemicolonDelimiter = False
+        .TextFileCommaDelimiter = True
+        .TextFileSpaceDelimiter = False
+        .TextFileColumnDataTypes = Array(1, 1)
+        .TextFileTrailingMinusNumbers = True
+        .Refresh BackgroundQuery:=False
+    End With
+    Range("A1:B5").Select
+    ActiveSheet.Shapes.AddChart2(201, xlColumnClustered).Select
+    ActiveChart.SetSourceData Source:=Range("Hoja1!$A$1:$B$5")
+    ActiveSheet.Shapes("Gráfico 1").IncrementLeft -102
+    ActiveSheet.Shapes("Gráfico 1").IncrementTop -47.25
+    ActiveChart.ChartTitle.Select
+    ActiveChart.ChartTitle.Text = "Tiempo (segundos)"
+    Selection.Format.TextFrame2.TextRange.Characters.Text = "Tiempo (segundos)"
+    With Selection.Format.TextFrame2.TextRange.Characters(1, 17).ParagraphFormat
+        .TextDirection = msoTextDirectionLeftToRight
+        .Alignment = msoAlignCenter
+    End With
+   
+    ActiveChart.ChartArea.Select
+    ActiveChart.ClearToMatchStyle
+    ActiveChart.ChartStyle = 205
+    Range("A6").Select
+    MsgBox "Si desea guardar la grafica mostrada se recomienda utilizar la funcion guardar como para salvar el registro"
+End Sub
